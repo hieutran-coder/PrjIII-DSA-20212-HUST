@@ -1,0 +1,84 @@
+// Sử dung Morris Traversal?
+
+// Chúng ta có thể traverse cây mà ko sử dụng stack và đệ quy. Ý tưởng dựa trên thread Bianry tree?. 
+
+#include<iostream>
+using namespace std;
+
+
+struct tNode {
+    int data;
+    struct tNode* left;
+    struct tNode* right;
+};
+// 1 node có thể có con ph
+
+//tranversal with recursion và stack?.
+
+void MorrisTraversal(struct tNode* root){
+
+    struct tNode *current, *pre;
+
+    if (root == NULL) return;
+
+    current = root;
+    
+    while(current != NULL) {
+
+
+        if( current->left == NULL) { // Nếu nó trỏ đến trái là null thì print nó và trỏ đến phải
+            printf("%d", current->data);
+            current = current->right; // Nếu current mới bằng null null thì sao?. thì bỏ qua vòng while?. hay current ko có con trái và phải?> 
+        } else{
+            
+            // Tìm người đi trước theo duyệt giũa?.--> Tại sao lại phải cần tìm inOrder predecessor?.
+            pre = current->left;
+            while(pre->right != NULL && pre->right != current) // cái con phải của pree nó ko phải null cũng o phải current?.
+                pre = pre->right;  // Mà tại sao đi bên trái ko đi mà lại đi bên phải?. `
+            
+            // Nó sẽ thoát ra khỏi vòng lặp này khi nào?. Khi con phải bằng NULL hoặc con phải bằng current?. 
+                        //--> Vô lý, rõ ràng pre được sinh ra từ current lúc ban đầu rồi mà?.
+
+            // Làm curent trở thành con phỉa của its inorder predecessor
+            if(pre->right ==NULL){ 
+                pre->right = current;
+                current = current ->left; // thế thay đổi current chắc ko làm thay đổi pre->right chứ?. 
+            }
+
+            // Revert lại sự thay đổi ở phần if để restorel lại cây đã thay đổi trở lại ban đầu?.
+            else{
+                pre->right = NULL; //  Chưa hiểu gì 
+                printf("%d", current->data);
+                current = current ->right; 
+            }// end nếu pre-> right = NULL
+
+        }// End nếu current-> left = null
+        
+    }// Kết thúc vong while
+}
+
+// Hàm utility
+// Hàm giúp cấp phát node mới với data cho trước và null ở trái và phải pointers?.
+
+struct tNode* newtNode(int data)
+{
+    struct tNode* node = new tNode;
+
+    node->data = data;
+    node->left = NULL;
+    node->right = NULL;
+    return (node); 
+};
+
+
+int main(){
+    struct tNode* root = newtNode(1);
+    root->left = newtNode(2);
+    root->right = newtNode(3);
+    root->left->left = newtNode(4);
+    root->left->right = newtNode(5);
+
+    MorrisTraversal(root);
+    
+    return 0; 
+}
